@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "engines": {
-    "node": "14.x"
+    "node": "15.x",
+    "npm": "7.x"
   },
   "scripts": {
     "dev": "nodemon --config nodemon.json src/server.ts --ignore ",
