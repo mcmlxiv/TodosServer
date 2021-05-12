@@ -34,9 +34,9 @@ mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
-mongoose.connection.once("open", () => {
-    console.log("connected!");
-});
+// mongoose.connection.once("open", () => {
+//   console.log("connected!");
+// });
 //Setting up GQL
 const typeDefs = gql(fs.readFileSync("schema/schema.graphql", { encoding: "utf8" }));
 //context from jwtToken from user to add auth to server
