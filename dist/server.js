@@ -12,9 +12,10 @@ const mongoose = require("mongoose");
 const resolvers = require("./resolvers");
 const Users = require("./models/users");
 const port = process.env.PORT || 7000;
-const jwtSecret = Buffer.from("Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt", "base64");
+const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
 const app = express();
+app.options("*", cors());
 app.get("/", function (req, res) {
     res.send("hello Todos");
 });
@@ -44,7 +45,7 @@ const apolloServer = new ApolloServer({
 });
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 //Post req for user Validation
-app.post("/login", async (req, res) => {
+app.post("/login", cors(), async (req, res) => {
     //incoming email and pass from client
     const { email, password } = req.body;
     //db user list
@@ -69,7 +70,7 @@ app.post("/login", async (req, res) => {
     });
     res.status(200).send({ token, user });
 });
-app.post("/signup", async (req, res) => {
+app.post("/signup", cors(), async (req, res) => {
     //incoming email and pass from client
     const { email } = req.body;
     const userFind = async () => Users.findOne({ email: email });
