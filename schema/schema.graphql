@@ -1,0 +1,50 @@
+type Query{
+    todoList:[TodoList]
+    user(id:ID!):User
+    users:[User]
+
+
+}
+
+type TodoList{
+    Date:String
+    id:ID!
+    text:String
+    title:String
+    todoChange:String
+    todosActive:Boolean
+    todosPin:Boolean
+    userId:String
+
+}
+type User{
+    id:ID!
+email:String,
+password:String,
+    firstName:String,
+    lastName:String,
+    todoList:[TodoList]
+
+}
+
+
+type Mutation{
+    createTodo(input:TodoInput):TodoList
+    deleteTodo(id:ID):TodoList
+    updateTodo(input:TodoInput):TodoList
+    createUser(input:UserInput):User
+    deleteUser(id:ID):User
+    updateUser(input:UserInput):User
+}
+
+input TodoInput{
+    id:ID,Date:String,text:String,title:String,todoChange:String,todosActive:Boolean,todosPin:Boolean,userId:String
+}
+
+input UserInput{
+    id:ID!
+    email:String,
+    password:String,
+    firstName:String,
+    lastName:String,
+}
