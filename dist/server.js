@@ -15,6 +15,9 @@ const port = process.env.PORT || 7000;
 const jwtSecret = Buffer.from("Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt", "base64");
 //refresh token for expired tokens
 const app = express();
+app.get("/", function (req, res) {
+    res.send("hello Todos");
+});
 app.use(cors(), bodyParser.json(), expressJwt({
     secret: jwtSecret,
     credentialsRequired: false,
