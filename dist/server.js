@@ -15,10 +15,6 @@ const port = process.env.PORT || 7000;
 const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
 const app = express();
-app.options("*", cors());
-app.get("/", function (req, res) {
-    res.send("hello Todos");
-});
 app.use(cors(), bodyParser.json(), expressJwt({
     secret: jwtSecret,
     credentialsRequired: false,
@@ -28,6 +24,18 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000/"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
+});
+app.options("*", cors());
+app.all("/*", function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:7000");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With,     Content-Type");
+    next();
+});
+app.get("/", function (req, res) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.send("hello Todos");
 });
 //MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
@@ -51,6 +59,8 @@ const apolloServer = new ApolloServer({
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 //Post req for user Validation
 app.post("/login", cors(), async (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     //incoming email and pass from client
     const { email, password } = req.body;
     //db user list
@@ -76,6 +86,8 @@ app.post("/login", cors(), async (req, res) => {
     res.status(200).send({ token, user });
 });
 app.post("/signup", cors(), async (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     //incoming email and pass from client
     const { email } = req.body;
     const userFind = async () => Users.findOne({ email: email });

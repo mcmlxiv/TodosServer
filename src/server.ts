@@ -18,10 +18,6 @@ const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
 
 const app = express();
-app.options("*", cors());
-app.get("/", function (req: Request, res: Response) {
-  res.send("hello Todos");
-});
 app.use(
   cors(),
   bodyParser.json(),
@@ -38,6 +34,24 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   next();
+});
+app.options("*", cors());
+app.all("/*", function (req: Request, res: Response, next: NextFunction) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:7000");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,     Content-Type"
+  );
+  next();
+});
+app.get("/", function (req: Request, res: Response) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.send("hello Todos");
 });
 
 //MongoDB
@@ -66,6 +80,11 @@ apolloServer.applyMiddleware({ app, path: "/graphql" });
 
 //Post req for user Validation
 app.post("/login", cors(), async (req: Request, res: Response) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   //incoming email and pass from client
   const { email, password } = req.body;
 
@@ -95,6 +114,11 @@ app.post("/login", cors(), async (req: Request, res: Response) => {
   res.status(200).send({ token, user });
 });
 app.post("/signup", cors(), async (req: Request, res: Response) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   //incoming email and pass from client
   const { email } = req.body;
 
