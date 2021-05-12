@@ -7,12 +7,12 @@
   "private": true,
   "engines": {
     "node": "15.5.x",
-    "npm": "7.x"
+    "npm": "7.5.x"
   },
   "scripts": {
     "dev": "nodemon --config nodemon.json src/server.ts --ignore ",
     "start": "node ./dist/server.js",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install npm && run build"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "dependencies": {
     "@types/body-parser": "^1.19.0",
