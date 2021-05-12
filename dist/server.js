@@ -21,7 +21,7 @@ const corsOptions = {
     optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
-app.use(cors(), bodyParser.json(), expressJwt({
+app.use(cors(corsOptions), bodyParser.json(), expressJwt({
     secret: jwtSecret,
     credentialsRequired: false,
     algorithms: ["RS256"], //RS digital signature needed for auth
@@ -31,7 +31,7 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-app.options("*", cors());
+app.options("*", cors(corsOptions));
 app.all("/*", function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:7000");
     res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
@@ -64,7 +64,7 @@ const apolloServer = new ApolloServer({
 });
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 //Post req for user Validation
-app.post("/login", cors(), async (req, res) => {
+app.post("/login", cors(corsOptions), async (req, res) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     //incoming email and pass from client
@@ -91,7 +91,7 @@ app.post("/login", cors(), async (req, res) => {
     });
     res.status(200).send({ token, user });
 });
-app.post("/signup", cors(), async (req, res) => {
+app.post("/signup", cors(corsOptions), async (req, res) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     //incoming email and pass from client

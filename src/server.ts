@@ -25,7 +25,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(
-  cors(),
+  cors(corsOptions),
   bodyParser.json(),
   expressJwt({
     secret: jwtSecret,
@@ -41,7 +41,7 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
   );
   next();
 });
-app.options("*", cors());
+app.options("*", cors(corsOptions));
 app.all("/*", function (req: Request, res: Response, next: NextFunction) {
   res.header("Access-Control-Allow-Origin", "http://localhost:7000");
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
@@ -85,7 +85,7 @@ const apolloServer = new ApolloServer({
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 
 //Post req for user Validation
-app.post("/login", cors(), async (req: Request, res: Response) => {
+app.post("/login", cors(corsOptions), async (req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -119,7 +119,7 @@ app.post("/login", cors(), async (req: Request, res: Response) => {
 
   res.status(200).send({ token, user });
 });
-app.post("/signup", cors(), async (req: Request, res: Response) => {
+app.post("/signup", cors(corsOptions), async (req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
