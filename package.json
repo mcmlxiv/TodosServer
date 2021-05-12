@@ -1,9 +1,12 @@
 {
-  "name": "server",
-  "version": "0.0.0",
+  "name": "todos-server",
+  "author": "mcmlxiv",
+  "license": "MIT",
+  "version": "1.0.0",
+  "description": "This is the remember todo backend",
   "private": true,
   "engines": {
-    "node": "15.x",
+    "node": "15.5.x",
     "npm": "7.x"
   },
   "scripts": {
