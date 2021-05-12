@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv").config();
 const { ApolloServer, gql } = require("apollo-server-express");
 const fs = require("fs"); //node js file system
 const bodyParser = require("body-parser");
@@ -9,45 +10,29 @@ const expressJwt = require("express-jwt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const resolvers = require("./resolvers");
-const db = require("./db");
-const TodoList = require("../models/todoList");
-const { User, getUserLoader } = require("../models/todoList");
-const port = 9000;
+const Users = require("./models/users");
+const port = process.env.PORT || 7000;
 const jwtSecret = Buffer.from("Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt", "base64");
 //refresh token for expired tokens
-const refreshToken = [];
 const app = express();
 app.use(cors(), bodyParser.json(), expressJwt({
     secret: jwtSecret,
     credentialsRequired: false,
     algorithms: ["RS256"], //RS digital signature needed for auth
 }));
-//Todo Need to put Password in ENV DO NOT LEAVE HERE
-const password = "welcome9";
-const uri = `mongodb+srv://mcmlxiv:${password}@todos.pxd2d.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 //MongoDB
-mongoose
-    .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-    .catch((error) => console.log(error, "error"));
-mongoose.connection.on("error", (err) => {
-    console.log(err);
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 });
 mongoose.connection.once("open", () => {
     console.log("connected!");
 });
-mongoose.connection.collection("users", console.log("s"));
-// const MongoClient = require('mongodb').MongoClient;
-// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-// client.connect(err => {
-//   const collection = client.db("test").collection("devices");
-//   // perform actions on the collection object
-//   client.close();
-// });
 //Setting up GQL
 const typeDefs = gql(fs.readFileSync("schema/schema.graphql", { encoding: "utf8" }));
 //context from jwtToken from user to add auth to server
 const context = ({ req }) => ({
-    userLoader: getUserLoader(),
+    token: req.headers.userauthorization || "",
 });
 const apolloServer = new ApolloServer({
     typeDefs,
@@ -56,13 +41,12 @@ const apolloServer = new ApolloServer({
 });
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 //Post req for user Validation
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
     //incoming email and pass from client
     const { email, password } = req.body;
     //db user list
-    const user = db.users
-        .list()
-        .find((user) => user.email === email);
+    const userFind = async () => Users.findOne({ email: email });
+    const user = await userFind();
     //Validation checking if email exist in user db
     if (!user) {
         const token = "case 1";
@@ -83,19 +67,11 @@ app.post("/login", (req, res) => {
     //refreshToken.push(token);
     res.status(200).send({ token, user });
 });
-app.post("/signup", (req, res
-// req: { body: { email: string; id: string } },
-// res: {
-//   status: (arg0: number) => any;
-//   send: (arg0: { token: string }) => void;
-// }
-) => {
+app.post("/signup", async (req, res) => {
     //incoming email and pass from client
     const { email } = req.body;
-    //db user list
-    const user = db.users
-        .list()
-        .find((user) => user.email === email);
+    const userFind = async () => Users.findOne({ email: email });
+    const user = await userFind();
     //sending token with jwtSecret
     const token = jwt.sign({ sub: user.id }, jwtSecret, {
         algorithm: "HS256",

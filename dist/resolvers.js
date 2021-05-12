@@ -1,29 +1,22 @@
 "use strict";
-const dbs = require("./db");
-const TodoList = require("../models/todoList");
-const connUser = require("../models/userConnection");
+//mongoose User and TodoLis Models
+const Users = require("./models/users");
+const TodoList = require("./models/todoList");
+//Define Mongoose schema to allow MongoDB to understand incoming data
 //Contruct Query through notarealdb json file and graphql
 const Query = {
-    // todoList: () => {
-    //   return dbs.todoList.list();
-    // },
-    todoList: async (parent, args, { models: { TodoList }, me }, info) => {
-        // if (!me) {
-        //   throw new AuthenticationError('You are not authenticated');
-        // }
-        const posts = await TodoList.find({ author: me.id }).exec();
-        return posts;
+    todoList: async () => {
+        return TodoList.find({});
     },
-    user: (root, { id }) => dbs.users.get(id),
-    users: connUser.find(),
-    //users: () => dbs.users.list(),
+    user: async (root, { id }) => await Users.findOne({ id }),
+    users: async () => {
+        return await Users.find({});
+    },
 };
 //Construct a list of items based on the User Id
 const User = {
-    todoList: (user) => {
-        return dbs.todoList
-            .list()
-            .filter((todos) => todos.userId === user.id);
+    todoList: ({ id }) => {
+        return TodoList.find({ userId: id });
     },
 };
 //Mutate JSON data
@@ -34,40 +27,52 @@ const Mutation = {
         if (!context.token) {
             throw new Error("Unauthorized");
         }
-        const id = dbs.todoList.create(input);
-        return dbs.todoList.get(id);
+        let TodosList = new TodoList({
+            id: input.id,
+            Date: input.Date,
+            text: input.text,
+            title: input.title,
+            todoChange: input.todoChange,
+            todosActive: input.todosActive,
+            todosPin: input.todosPin,
+            userId: input.userId,
+        });
+        return TodosList.save();
     },
-    deleteTodo: (root, { id }, context) => {
+    deleteTodo: async (root, { id }, context) => {
         if (!context.token) {
             throw new Error("Unauthorized");
         }
-        return dbs.todoList.delete(id);
+        let todoList = await TodoList.findOne({ id });
+        todoList.delete();
     },
-    updateTodo: (root, { input }, context) => {
+    updateTodo: async (root, { input }, context) => {
         if (!context.token) {
             throw new Error("Unauthorized");
         }
-        return dbs.todoList.update(input);
+        let todoList = await TodoList.findOne({ id: input.id });
+        todoList.overwrite(input);
+        return await todoList.save();
     },
     //USER CRUD
     createUser: (root, { input }) => {
-        const userCheck = dbs.todoList
-            .list()
-            .find((user) => user.email === input.email);
-        if (userCheck) {
-            const id = dbs.users.create({ error: "Email found" });
-            return dbs.users.get(id);
-        }
-        else {
-            const id = dbs.users.create(input);
-            return dbs.users.get(id);
-        }
+        let user = new Users({
+            id: input.id,
+            email: input.email,
+            password: input.password,
+            firstName: input.firstName,
+            lastName: input.lastName,
+        });
+        return user.save();
     },
-    deleteUser: (root, { id }) => {
-        return dbs.users.delete(id);
+    deleteUser: async (root, { id }) => {
+        let user = await Users.findOne({ id });
+        user.delete();
     },
-    updateUser: (root, { input }) => {
-        return dbs.users.update(input);
+    updateUser: async (root, { input }) => {
+        let user = await Users.findOne({ id: input.id });
+        user.overwrite(input);
+        return await user.save();
     },
 };
 module.exports = { Query, Mutation, User };

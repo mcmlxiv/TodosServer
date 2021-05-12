@@ -10,12 +10,12 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
 const resolvers = require("./resolvers");
-const Users = require("../models/users");
+const Users = require("./models/users");
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 7000;
 const jwtSecret = Buffer.from("Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt", "base64");
 //refresh token for expired tokens
-const refreshToken = [];
+
 const app = express();
 app.use(
   cors(),
