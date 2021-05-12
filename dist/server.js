@@ -24,6 +24,11 @@ app.use(cors(), bodyParser.json(), expressJwt({
     credentialsRequired: false,
     algorithms: ["RS256"], //RS digital signature needed for auth
 }));
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 //MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,

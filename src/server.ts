@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const express = require("express");
 const expressJwt = require("express-jwt");
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
@@ -31,6 +31,14 @@ app.use(
     algorithms: ["RS256"], //RS digital signature needed for auth
   })
 );
+app.use(function (req: Request, res: Response, next: NextFunction) {
+  res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 //MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
