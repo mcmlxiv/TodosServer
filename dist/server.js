@@ -39,7 +39,8 @@ app.all("/*", function (req, res, next) {
     next();
 });
 app.get("/", function (req, res) {
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.send("hello Todos");
 });
@@ -66,7 +67,7 @@ apolloServer.applyMiddleware({ app, path: "/graphql" });
 //Post req for user Validation
 app.post("/login", cors(corsOptions), async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     //incoming email and pass from client
     const { email, password } = req.body;
@@ -94,7 +95,7 @@ app.post("/login", cors(corsOptions), async (req, res) => {
 });
 app.post("/signup", cors(corsOptions), async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     //incoming email and pass from client
     const { email } = req.body;
