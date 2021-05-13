@@ -1,9 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 //Define Mongoose schema to allow MongoDB to understand incoming data
-const todoListSchema = new Schema({
+const todoListSchema = new Schema(
+  {
     id: String,
     Date: String,
     text: String,
@@ -12,6 +11,11 @@ const todoListSchema = new Schema({
     todosActive: Boolean,
     todosPin: Boolean,
     userId: String,
-});
+  },
+  {
+    collection: "users",
+  }
+);
+
 const TodoList = mongoose.model("TodoList", todoListSchema);
-exports.default = TodoList;
+module.exports = TodoList;

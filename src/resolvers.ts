@@ -1,6 +1,6 @@
 //mongoose User and TodoLis Models
-const Users = require("./models/users");
-const TodoList = require("./models/todoList");
+const Users = require("../models/users"); //../dist/models/users
+const TodoList = require("../models/todoList");
 
 //Define Mongoose schema to allow MongoDB to understand incoming data
 

@@ -10,7 +10,7 @@ const expressJwt = require("express-jwt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const resolvers = require("./resolvers");
-const Users = require("./models/users");
+const Users = require("../models/users");
 const port = process.env.PORT || 7000;
 const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
@@ -20,9 +20,9 @@ mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
-// mongoose.connection.once("open", () => {
-//   console.log("connected!");
-// });
+mongoose.connection.once("open", () => {
+    console.log("connected!");
+});
 //Setting up GQL
 const typeDefs = gql(fs.readFileSync("schema/schema.graphql", { encoding: "utf8" }));
 //context from jwtToken from user to add auth to server
@@ -78,7 +78,11 @@ app.post("/login", cors(), async (req, res) => {
     //incoming email and pass from client
     const { email, password } = req.body;
     //db user list
-    const userFind = async () => Users.findOne({ email: email });
+    const userFind = async () => Users.findOne({
+        where: {
+            email: email,
+        },
+    });
     const user = await userFind();
     //Validation checking if email exist in user db
     if (!user) {
