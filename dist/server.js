@@ -33,7 +33,9 @@ app.use(function (req, res, next) {
 });
 app.options("*", cors(corsOptions));
 app.all("/*", function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:7000");
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000/login");
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000/signup");
     res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
     res.header("Access-Control-Allow-Headers", "X-Requested-With,     Content-Type");
     next();
