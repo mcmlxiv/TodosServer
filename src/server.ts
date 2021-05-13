@@ -44,9 +44,6 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 app.options("*", cors(corsOptions));
 app.all("/*", function (req: Request, res: Response, next: NextFunction) {
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000/login");
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000/signup");
-
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header(
     "Access-Control-Allow-Headers",
