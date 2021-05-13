@@ -48,7 +48,8 @@ app.use(
   })
 );
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  res.header("Access-Control-Allow-Origin: *");
+  res.header("Access-Control-Allow-Origin: http://localhost:3000");
+
   res.header(
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
@@ -60,7 +61,8 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 });
 //app.options("*", cors(corsOptions));
 app.all("/*", function (req: Request, res: Response, next: NextFunction) {
-  res.header("Access-Control-Allow-Origin: *");
+  res.header("Access-Control-Allow-Origin: http://localhost:3000");
+
   res.header(
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
@@ -71,7 +73,7 @@ app.all("/*", function (req: Request, res: Response, next: NextFunction) {
   next();
 });
 app.get("/", function (req: Request, res: Response) {
-  res.header("Access-Control-Allow-Origin: *");
+  res.header("Access-Control-Allow-Origin: http://localhost:3000");
   res.header(
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
@@ -108,7 +110,7 @@ apolloServer.applyMiddleware({ app, path: "/graphql" });
 
 //Post req for user Validation
 app.post("/login", cors(), async (req: Request, res: Response) => {
-  res.header("Access-Control-Allow-Origin: *");
+  res.header("Access-Control-Allow-Origin: http://localhost:3000");
   res.header(
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
@@ -145,7 +147,8 @@ app.post("/login", cors(), async (req: Request, res: Response) => {
   res.status(200).send({ token, user });
 });
 app.post("/signup", cors(), async (req: Request, res: Response) => {
-  res.header("Access-Control-Allow-Origin: *");
+  res.header("Access-Control-Allow-Origin: http://localhost:3000");
+
   res.header(
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"

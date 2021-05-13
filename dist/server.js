@@ -37,20 +37,20 @@ bodyParser.json(), expressJwt({
     algorithms: ["RS256"], //RS digital signature needed for auth
 }));
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Origin: http://localhost:3000");
     res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     next();
 });
 //app.options("*", cors(corsOptions));
 app.all("/*", function (req, res, next) {
-    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Origin: http://localhost:3000");
     res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     next();
 });
 app.get("/", function (req, res) {
-    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Origin: http://localhost:3000");
     res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     res.send("hello Todos");
@@ -77,7 +77,7 @@ const apolloServer = new ApolloServer({
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 //Post req for user Validation
 app.post("/login", cors(), async (req, res) => {
-    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Origin: http://localhost:3000");
     res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     //incoming email and pass from client
@@ -105,7 +105,7 @@ app.post("/login", cors(), async (req, res) => {
     res.status(200).send({ token, user });
 });
 app.post("/signup", cors(), async (req, res) => {
-    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Origin: http://localhost:3000");
     res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     //incoming email and pass from client
