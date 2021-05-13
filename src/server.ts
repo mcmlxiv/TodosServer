@@ -2,7 +2,7 @@ require("dotenv").config();
 const { ApolloServer, gql } = require("apollo-server-express");
 const fs = require("fs"); //node js file system
 const bodyParser = require("body-parser");
-//const cors = require("cors");
+const cors = require("cors");
 const express = require("express");
 const expressJwt = require("express-jwt");
 import { NextFunction, Request, Response } from "express";
@@ -18,6 +18,15 @@ const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
 
 const app = express();
+
+app.options("*", cors());
+
+app.options(
+  "https://cryptic-headland-94862.herokuapp.com/https://remember-todo-backend.herokuapp.com/login",
+  cors()
+);
+app.options("http://localhost:3000", cors());
+
 // const corsOptions = {
 //   origin: [
 //     "http://localhost:3000",
@@ -96,7 +105,7 @@ const apolloServer = new ApolloServer({
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 
 //Post req for user Validation
-app.post("/login", async (req: Request, res: Response) => {
+app.post("/login", cors(), async (req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin: *");
   res.header(
     "Access-Control-Allow-Methods",
@@ -133,7 +142,7 @@ app.post("/login", async (req: Request, res: Response) => {
 
   res.status(200).send({ token, user });
 });
-app.post("/signup", async (req: Request, res: Response) => {
+app.post("/signup", cors(), async (req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin: *");
   res.header(
     "Access-Control-Allow-Methods",
