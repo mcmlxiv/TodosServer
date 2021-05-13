@@ -19,8 +19,11 @@ const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 
 const app = express();
 const corsOptions = {
-  origin: "http://localhost:3000",
-  credentials: true, //access-control-allow-credentials:true
+  origin: [
+    "http://localhost:3000",
+    "https://remember-todo-backend.herokuapp.com/",
+  ],
+  credentials: true,
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));

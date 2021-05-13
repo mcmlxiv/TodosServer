@@ -16,7 +16,10 @@ const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
 const app = express();
 const corsOptions = {
-    origin: "http://localhost:3000",
+    origin: [
+        "http://localhost:3000",
+        "https://remember-todo-backend.herokuapp.com/",
+    ],
     credentials: true,
     optionSuccessStatus: 200,
 };
