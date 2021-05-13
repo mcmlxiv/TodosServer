@@ -15,46 +15,6 @@ const port = process.env.PORT || 7000;
 const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
 const app = express();
-app.options("*", cors());
-app.options("https://cryptic-headland-94862.herokuapp.com/https://remember-todo-backend.herokuapp.com/login", cors());
-app.options("http://localhost:3000", cors());
-app.options("/login", cors());
-app.options("/signup", cors());
-// const corsOptions = {
-//   origin: [
-//     "http://localhost:3000",
-//
-//   ],
-//   credentials: true,
-//   optionSuccessStatus: 200,
-// };
-//app.use(cors(corsOptions));
-app.use(
-//cors(corsOptions),
-bodyParser.json(), expressJwt({
-    secret: jwtSecret,
-    credentialsRequired: false,
-    algorithms: ["RS256"], //RS digital signature needed for auth
-}));
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin: http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
-    next();
-});
-//app.options("*", cors(corsOptions));
-app.all("/*", function (req, res, next) {
-    res.header("Access-Control-Allow-Origin: http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
-    next();
-});
-app.get("/", function (req, res) {
-    res.header("Access-Control-Allow-Origin: http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
-    res.send("hello Todos");
-});
 //MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -75,11 +35,46 @@ const apolloServer = new ApolloServer({
     context,
 });
 apolloServer.applyMiddleware({ app, path: "/graphql" });
+//Cors Fight
+app.options("*", cors());
+// const corsOptions = {
+//   origin: [
+//     "http://localhost:3000",
+//
+//   ],
+//   credentials: true,
+//   optionSuccessStatus: 200,
+// };
+//app.use(cors(corsOptions));
+app.use(
+//cors(corsOptions),
+bodyParser.json(), expressJwt({
+    secret: jwtSecret,
+    credentialsRequired: false,
+    algorithms: ["RS256"], //RS digital signature needed for auth
+}));
+app.get("/", function (req, res) {
+    res.send("hello Todos");
+});
+app.head("/login", cors(), (req, res) => {
+    console.info("HEAD /login");
+    res.sendStatus(204);
+});
+app.get("/login", cors(), (req, res) => {
+    console.info("GET /login");
+    res.json({
+        text: "Simple CORS requests are working. [GET]",
+    });
+});
+const options = {
+    origin: true,
+    methods: ["POST"],
+    credentials: true,
+    maxAge: 3600,
+};
+app.options("/login", cors(options));
 //Post req for user Validation
 app.post("/login", cors(), async (req, res) => {
-    res.header("Access-Control-Allow-Origin: http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     //incoming email and pass from client
     const { email, password } = req.body;
     //db user list
@@ -105,9 +100,6 @@ app.post("/login", cors(), async (req, res) => {
     res.status(200).send({ token, user });
 });
 app.post("/signup", cors(), async (req, res) => {
-    res.header("Access-Control-Allow-Origin: http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     //incoming email and pass from client
     const { email } = req.body;
     const userFind = async () => Users.findOne({ email: email });
