@@ -4,7 +4,7 @@ require("dotenv").config();
 const { ApolloServer, gql } = require("apollo-server-express");
 const fs = require("fs"); //node js file system
 const bodyParser = require("body-parser");
-const cors = require("cors");
+//const cors = require("cors");
 const express = require("express");
 const expressJwt = require("express-jwt");
 const jwt = require("jsonwebtoken");
@@ -15,36 +15,39 @@ const port = process.env.PORT || 7000;
 const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
 const app = express();
-const corsOptions = {
-    origin: [
-        "http://localhost:3000",
-        "https://remember-todo-backend.herokuapp.com/",
-    ],
-    credentials: true,
-    optionSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
-app.use(cors(corsOptions), bodyParser.json(), expressJwt({
+// const corsOptions = {
+//   origin: [
+//     "http://localhost:3000",
+//
+//   ],
+//   credentials: true,
+//   optionSuccessStatus: 200,
+// };
+//app.use(cors(corsOptions));
+app.use(
+//cors(corsOptions),
+bodyParser.json(), expressJwt({
     secret: jwtSecret,
     credentialsRequired: false,
     algorithms: ["RS256"], //RS digital signature needed for auth
 }));
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000/"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     next();
 });
-app.options("*", cors(corsOptions));
+//app.options("*", cors(corsOptions));
 app.all("/*", function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With,     Content-Type");
+    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     next();
 });
 app.get("/", function (req, res) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     res.send("hello Todos");
 });
 //MongoDB
@@ -68,10 +71,10 @@ const apolloServer = new ApolloServer({
 });
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 //Post req for user Validation
-app.post("/login", cors(corsOptions), async (req, res) => {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+app.post("/login", async (req, res) => {
+    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     //incoming email and pass from client
     const { email, password } = req.body;
     //db user list
@@ -96,10 +99,10 @@ app.post("/login", cors(corsOptions), async (req, res) => {
     });
     res.status(200).send({ token, user });
 });
-app.post("/signup", cors(corsOptions), async (req, res) => {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+app.post("/signup", async (req, res) => {
+    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token");
     //incoming email and pass from client
     const { email } = req.body;
     const userFind = async () => Users.findOne({ email: email });
