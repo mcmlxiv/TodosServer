@@ -18,6 +18,8 @@ const app = express();
 app.options("*", cors());
 app.options("https://cryptic-headland-94862.herokuapp.com/https://remember-todo-backend.herokuapp.com/login", cors());
 app.options("http://localhost:3000", cors());
+app.options("/login", cors());
+app.options("/signup", cors());
 // const corsOptions = {
 //   origin: [
 //     "http://localhost:3000",

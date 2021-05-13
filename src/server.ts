@@ -26,6 +26,8 @@ app.options(
   cors()
 );
 app.options("http://localhost:3000", cors());
+app.options("/login", cors());
+app.options("/signup", cors());
 
 // const corsOptions = {
 //   origin: [
