@@ -12,17 +12,33 @@ const mongoose = require("mongoose");
 const resolvers = require("./resolvers");
 const Users = require("../models/users");
 const port = process.env.PORT || 7000;
-const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
+const jwtSecret = Buffer.from("Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt", "base64");
+// const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
 const app = express();
+//Cors Fight
+app.options("*", cors());
+// const corsOptions = {
+//   origin: [
+//     "http://localhost:3000",
+//
+//   ],
+//   credentials: true,
+//   optionSuccessStatus: 200,
+// };
+//app.use(cors(corsOptions));
+app.use(cors(), bodyParser.json(), expressJwt({
+    secret: jwtSecret,
+    credentialsRequired: false,
+    algorithms: ["RS256"], //RS digital signature needed for auth
+}));
 //MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose
+    .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-});
-mongoose.connection.once("open", () => {
-    console.log("connected!");
-});
+})
+    .then((response) => console.log(response + "connected!"));
 //Setting up GQL
 const typeDefs = gql(fs.readFileSync("schema/schema.graphql", { encoding: "utf8" }));
 //context from jwtToken from user to add auth to server
@@ -35,24 +51,6 @@ const apolloServer = new ApolloServer({
     context,
 });
 apolloServer.applyMiddleware({ app, path: "/graphql" });
-//Cors Fight
-app.options("*", cors());
-// const corsOptions = {
-//   origin: [
-//     "http://localhost:3000",
-//
-//   ],
-//   credentials: true,
-//   optionSuccessStatus: 200,
-// };
-//app.use(cors(corsOptions));
-app.use(
-//cors(corsOptions),
-bodyParser.json(), expressJwt({
-    secret: jwtSecret,
-    credentialsRequired: false,
-    algorithms: ["RS256"], //RS digital signature needed for auth
-}));
 app.get("/", function (req, res) {
     res.send("hello Todos");
 });
@@ -69,19 +67,17 @@ app.get("/login", cors(), (req, res) => {
 const options = {
     origin: true,
     methods: ["POST"],
-    credentials: true,
+    credentials: false,
     maxAge: 3600,
 };
 app.options("/login", cors(options));
-//Post req for user Validation
+//login
 app.post("/login", cors(), async (req, res) => {
     //incoming email and pass from client
     const { email, password } = req.body;
     //db user list
     const userFind = async () => Users.findOne({
-        where: {
-            email: email,
-        },
+        email: email,
     });
     const user = await userFind();
     //Validation checking if email exist in user db
@@ -103,6 +99,7 @@ app.post("/login", cors(), async (req, res) => {
     });
     res.status(200).send({ token, user });
 });
+//Sign up
 app.post("/signup", cors(), async (req, res) => {
     //incoming email and pass from client
     const { email } = req.body;

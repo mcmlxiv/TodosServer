@@ -1,3 +1,5 @@
+import { Mongoose } from "mongoose";
+
 require("dotenv").config();
 const { ApolloServer, gql } = require("apollo-server-express");
 const fs = require("fs"); //node js file system
@@ -13,34 +15,11 @@ const resolvers = require("./resolvers");
 const Users = require("../models/users");
 
 const port = process.env.PORT || 7000;
-
-const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
+const jwtSecret = Buffer.from("Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt", "base64");
+// const jwtSecret = Buffer.from(String(process.env.JWT_SECRET), "base64");
 //refresh token for expired tokens
 
 const app = express();
-//MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-mongoose.connection.once("open", () => {
-  console.log("connected!");
-});
-//Setting up GQL
-const typeDefs = gql(
-  fs.readFileSync("schema/schema.graphql", { encoding: "utf8" })
-);
-//context from jwtToken from user to add auth to server
-const context = ({ req }: { req: Request }) => ({
-  token: req.headers.userauthorization || "",
-});
-
-const apolloServer = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context,
-});
-apolloServer.applyMiddleware({ app, path: "/graphql" });
 
 //Cors Fight
 app.options("*", cors());
@@ -55,7 +34,7 @@ app.options("*", cors());
 // };
 //app.use(cors(corsOptions));
 app.use(
-  //cors(corsOptions),
+  cors(),
   bodyParser.json(),
   expressJwt({
     secret: jwtSecret,
@@ -63,6 +42,30 @@ app.use(
     algorithms: ["RS256"], //RS digital signature needed for auth
   })
 );
+//MongoDB
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then((response: Mongoose) => console.log(response + "connected!"));
+
+//Setting up GQL
+const typeDefs = gql(
+  fs.readFileSync("schema/schema.graphql", { encoding: "utf8" })
+);
+//context from jwtToken from user to add auth to server
+
+const context = ({ req }: { req: Request }) => ({
+  token: req.headers.userauthorization || "",
+});
+
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context,
+});
+apolloServer.applyMiddleware({ app, path: "/graphql" });
 
 app.get("/", function (req: Request, res: Response) {
   res.send("hello Todos");
@@ -81,12 +84,12 @@ app.get("/login", cors(), (req: Request, res: Response) => {
 const options = {
   origin: true,
   methods: ["POST"],
-  credentials: true,
+  credentials: false,
   maxAge: 3600,
 };
 app.options("/login", cors(options));
 
-//Post req for user Validation
+//login
 app.post("/login", cors(), async (req: Request, res: Response) => {
   //incoming email and pass from client
   const { email, password } = req.body;
@@ -94,9 +97,7 @@ app.post("/login", cors(), async (req: Request, res: Response) => {
   //db user list
   const userFind = async () =>
     Users.findOne({
-      where: {
-        email: email,
-      },
+      email: email,
     });
   const user = await userFind();
 
@@ -121,6 +122,8 @@ app.post("/login", cors(), async (req: Request, res: Response) => {
 
   res.status(200).send({ token, user });
 });
+
+//Sign up
 app.post("/signup", cors(), async (req: Request, res: Response) => {
   //incoming email and pass from client
   const { email } = req.body;
