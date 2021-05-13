@@ -65,6 +65,7 @@ const apolloServer = new ApolloServer({
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 //Post req for user Validation
 app.post("/login", cors(corsOptions), async (req, res) => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     //incoming email and pass from client
@@ -92,6 +93,7 @@ app.post("/login", cors(corsOptions), async (req, res) => {
     res.status(200).send({ token, user });
 });
 app.post("/signup", cors(corsOptions), async (req, res) => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     //incoming email and pass from client
